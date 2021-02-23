@@ -79,7 +79,7 @@ fn main() {
             values.set(0, &SecretI64::from(row_0.get(i)));
             values.set(1, &SecretI64::from(row_1.get(i)));
             values.set(2, &SecretI64::from(row_2.get(i)));
-            let indexes = rescale(sort(&values));
+            let indexes = rescale(&sort(&values));
             // reveal the rankings selectively
             SecretModp::from(indexes.get(0)).private_output(Player::<0>, Channel::<0>);
             SecretModp::from(indexes.get(1)).private_output(Player::<1>, Channel::<0>);
