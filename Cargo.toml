@@ -1,0 +1,25 @@
+[package]
+name = "cats_demo_2_2"
+version = "0.1.0"
+authors = ["Bruno Grieder <bruno.grieder:x@cosmian.com>"]
+edition = "2018"
+
+[dependencies]
+scale = { package = "scale-core", version = "0.0.1" }
+scale_std = "0.0.1"
+
+[features]
+emulate = ["scale/emulate", "scale_std/emulate"]
+
+[profile.dev]
+overflow-checks = false
+
+[profile.release]
+# Note: Do not set `debug = true`, `wasm-opt` dies horribly if you do.
+panic = "abort"
+# LTO really cleans up the amount of wasm that is generated
+lto = true
+codegen-units = 1
+
+[workspace]
+
