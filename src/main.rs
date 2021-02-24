@@ -66,8 +66,9 @@ fn main() {
         };
         // Reveal the month to all players
         print!("...revealing month...\n");
-        let clear_month = month.reveal();
-        clear_month.output(Channel::<0>);
+        month.private_output(Player::<0>, Channel::<0>);
+        month.private_output(Player::<1>, Channel::<0>);
+        month.private_output(Player::<2>, Channel::<0>);
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
             // reveal the sum to all players
