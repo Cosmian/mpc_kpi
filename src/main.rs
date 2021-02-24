@@ -72,9 +72,11 @@ fn main() {
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
             // reveal the sum to all players
-            let sum: ClearModp = (row_0.get(i) + row_2.get(i) + row_2.get(i)).reveal();
+            let sum: SecretModp = row_0.get(i) + row_2.get(i) + row_2.get(i);
             print!("...revealing sum criteria...", i as i64, "\n");
-            sum.output(Channel::<0>);
+            sum.private_output(Player::<0>, Channel::<0>);
+            sum.private_output(Player::<1>, Channel::<0>);
+            sum.private_output(Player::<2>, Channel::<0>);
             // determine rankings
             let mut values: Slice<SecretI64> = Slice::uninitialized(3);
             values.set(0, &SecretI64::from(row_0.get(i)));
