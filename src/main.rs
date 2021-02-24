@@ -178,7 +178,7 @@ fn rescale(indexes: &Slice<SecretI64>) -> Slice<SecretI64> {
     let mut rescaled: Slice<SecretI64> = Slice::uninitialized(n);
     for i in 0..n {
         let v = &indexes.get(i);
-        rescaled.set(i, &((*v + n_1) >> ConstU32::<1>));
+        rescaled.set(i, &(((*v + n_1) >> ConstU32::<1>) + 1));
     }
     rescaled
 }
