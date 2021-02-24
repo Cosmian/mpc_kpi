@@ -72,7 +72,7 @@ fn main() {
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
             // reveal the sum to all players
-            let sum: SecretModp = row_0.get(i) + row_2.get(i) + row_2.get(i);
+            let sum: SecretModp = row_0.get(i) + row_1.get(i) + row_2.get(i);
             print!("...revealing sum criteria...", i as i64, "\n");
             sum.private_output(Player::<0>, Channel::<0>);
             sum.private_output(Player::<1>, Channel::<0>);
@@ -84,6 +84,7 @@ fn main() {
             values.set(2, &SecretI64::from(row_2.get(i)));
             let indexes = rescale(&sort(&values));
             // reveal the rankings selectively
+            print!("...revealing rankings criteria...", i as i64, "\n");
             SecretModp::from(indexes.get(0)).private_output(Player::<0>, Channel::<0>);
             SecretModp::from(indexes.get(1)).private_output(Player::<1>, Channel::<0>);
             SecretModp::from(indexes.get(2)).private_output(Player::<2>, Channel::<0>);
@@ -157,8 +158,8 @@ fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
             let left_value = &values.get(left);
             let right_value = &values.get(right);
             let cmp = cmp(left_value, right_value);
-            indexes.set(left, &(*left_value + cmp));
-            indexes.set(right, &(*right_value - cmp));
+            indexes.set(left, &(indexes.get(left) + cmp));
+            indexes.set(right, &(indexes.get(right) - cmp));
         }
     }
     indexes
