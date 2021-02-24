@@ -31,7 +31,7 @@ scale::main! {
     CLEAR_MODP_MEMORY = 1000;
     KAPPA = 40;
 }
-const CRITERIA: u64 = 6;
+const CRITERIA: u64 = 5;
 
 #[inline(never)]
 fn main() {
@@ -130,7 +130,10 @@ fn read_next_record<const P: u32>(
     }
     if let Some(n) = expected_cols {
         if num_cols != *n {
-            print!("ERROR: invalid number of columns", num_cols as i64, "\n");
+            print!(
+                "ERROR: invalid number of columns: ",
+                num_cols as i64, ", expected: ", *n as i64, "\n"
+            );
             scale::assert!(num_cols == *n);
         }
     }
