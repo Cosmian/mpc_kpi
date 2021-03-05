@@ -2,14 +2,11 @@
 #![no_main]
 #![feature(min_const_generics)]
 
+use scale::SecretModp;
+use scale::{print, SecretI64};
 use scale_std::slice::Slice;
 
-// Ranking of 3 players along these criteria
-//  - crédit habitat
-//  - crédit conso
-//  - épargne LT
-//  - épargne CT
-//  - solde comptes courants
+// Ranking of 3 players along 5 criteria
 //
 // this programs calculates for all criteria:
 // - the sum and reveals it to all players
@@ -177,7 +174,9 @@ fn rescale(indexes: &Slice<SecretI64>) -> Slice<SecretI64> {
     let n_1 = SecretI64::from(n as i64 - 1);
     let mut rescaled: Slice<SecretI64> = Slice::uninitialized(n);
     for i in 0..n {
-        let v = &indexes.get(i);
+        let v = &indexes
+            .get(i)
+            .expect("there should be an index at that position");
         rescaled.set(i, &(((*v + n_1) >> ConstU32::<1>) + 1));
     }
     rescaled

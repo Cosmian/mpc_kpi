@@ -6,7 +6,7 @@ the software.
 \vspace{5mm}
 
 \noindent
-This is currently {\bf version 1.11} of the SCALE and MAMBA software.
+This is currently {\bf version 1.12} of the SCALE and MAMBA software.
 There are two main components to the system, a run time system called
 SCALE,
 \begin{center}
@@ -26,6 +26,27 @@ The software is a major modification of the earlier SPDZ software.
 You {\em should not} assume it works the same so please read
 the documentation fully before proceeding.
 
+\subsection{Changes in version 1.12 from 1.11}
+Apart from the usual minor bug fixes...
+\begin{enumerate}
+\item Memory is now of fixed size determined at compile time.
+This is defined in the variables \verb|*MEMSIZE| in the file
+\verb|config.h|. Any access outside of the range causes a crash
+of the system. No longer (as since version 1.7)
+does the memory dynamically increase as your
+program asks for more.
+\item Memory can be allocated/deallocated in the runtime
+	using the \verb|NEW| and \verb|DELETE| byte codes.
+	This is not really used in the MAMBA pipeline, but
+	is used in the Rust pipeline to simplify memory
+	management and reduce memory consumption.
+\item Local functions associated to floating point arithmetic
+	have been added. This is to support the 
+	\verb|ClearIEEE| type in the Rust pipeline.
+\item Removed need for \verb|gmpy2|.
+\item Added \verb|MODINT| instruction to complement the
+	\verb|DIVINT| instruction.
+\end{enumerate}
 
 
 \subsection{Changes in version 1.11 from 1.10}
@@ -41,6 +62,13 @@ Apart from the usual minor bug fixes...
 	be updated.
 	For details of the differences between the two methodologies
 	for executing binary circuits see Chapter \ref{sec:GC}.
+\item We now have an experimental way of programming the system
+	using Rust. See the {\bf pdf} file in the directory \verb|RustDocumentation|
+	for an overview. Whilst this is not yet fully operational
+	we welcome feedback and language features.
+	\warning{Overtime MAMBA will be deprecated as a means
+	of programming the system as the Rust variant becomes
+	more fully operational}.
 \item Circuit for IEEE floating point `less than' added.
 \item Fixed a bug inherited from Hart's book re computing $2^x$.
 \item Added domain seperation in the OT PRNG's to fix a potential

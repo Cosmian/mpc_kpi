@@ -1,12 +1,12 @@
 [package]
-name = "cats_demo_2_2"
+name = "mpc_kpi"
 version = "0.1.0"
 authors = ["Bruno Grieder <bruno.grieder:x@cosmian.com>"]
 edition = "2018"
 
 [dependencies]
-scale = { package = "scale-core", version = "0.0.1" }
-scale_std = "0.0.1"
+scale = { package = "scale-core", version = "0.1.0" }
+scale_std = "0.1.0"
 
 [features]
 emulate = ["scale/emulate", "scale_std/emulate"]

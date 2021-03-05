@@ -1,6 +1,9 @@
+
+// Copyright (c) 2021, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+// Copyright (c) 2021, Cosmian Tech SAS, 53-55 rue La Boétie, Paris, France.
+
 #![cfg_attr(not(feature = "emulate"), no_std)]
 #![cfg_attr(not(feature = "emulate"), feature(wasm_simd, simd_ffi))]
-#![feature(min_const_generics)]
 
 #[cfg(feature = "emulate")]
 pub use std::process::exit;
@@ -110,7 +113,10 @@ impl Modp<SecretModp> for ClearModp {}
 impl Modp<SecretModp> for SecretModp {}
 
 pub trait StoreInMem<Index> {
-    fn store_in_mem(&self, idx: Index);
+    /// Internal operation for writing to memory. If you want
+    /// to use memory, consider using one of the safe wrappers like
+    /// `Array`, `Slice` or `Box`.
+    unsafe fn store_in_mem(&self, idx: Index);
 }
 
 pub trait LoadFromMem<Index> {
@@ -118,7 +124,7 @@ pub trait LoadFromMem<Index> {
 }
 
 impl<T: StoreInMem<i64>> StoreInMem<(i64, i64)> for Option<T> {
-    fn store_in_mem(&self, idk: (i64, i64)) {
+    unsafe fn store_in_mem(&self, idk: (i64, i64)) {
         match self {
             None => 0_i64.store_in_mem(idk.0),
             Some(a) => {
@@ -243,12 +249,14 @@ pub trait RevealIfSecret {
 mod clear_modp;
 mod i64;
 mod io;
+mod print;
 mod secret_bit;
 mod secret_i64;
 mod secret_modp;
 mod system;
 
 pub use io::*;
+pub use print::*;
 pub use system::*;
 
 #[cfg(not(feature = "emulate"))]
@@ -265,21 +273,10 @@ extern "Rust" {
     fn pop_secret_i64() -> SecretI64;
 }
 
-#[no_mangle]
-pub static mut I64_MEMORY: i64 = 0;
-#[no_mangle]
-pub static mut SECRET_I64_MEMORY: i64 = 0;
-#[no_mangle]
-pub static mut CLEAR_MODP_MEMORY: i64 = 0;
-#[no_mangle]
-pub static mut SECRET_MODP_MEMORY: i64 = 0;
-#[no_mangle]
-pub static mut KAPPA: u64 = 40;
-
-/// We reserve 1000 memory entries for the stack.
-/// FIXME: This is an arbitrary choice in order to put
-/// `test()` dumps after the local variables.
-const TEST_MEMORY_OFFSET: i64 = 1000;
+/// We reserve 1000 memory entries for the testing data
+/// This is done in the first instructions, so we know
+/// testing data is allocated from position 0 to 999
+const TEST_MEMORY_OFFSET: i64 = 0;
 
 #[cfg(feature = "emulate")]
 #[inline(never)]
@@ -370,56 +367,27 @@ mod testing_emulated;
 
 pub mod alloc;
 
+pub use scale_impl_generator::main;
+
+#[doc(hidden)]
 #[macro_export]
-macro_rules! main {
-    (I64_MEMORY = $a:expr;SECRET_I64_MEMORY = $b:expr;SECRET_MODP_MEMORY = $c:expr;CLEAR_MODP_MEMORY = $d:expr;KAPPA = $e:expr;) => {
+macro_rules! __main {
+    (KAPPA = $kappa:expr;) => {
         use $crate::print;
         use $crate::*;
+        type SecretInteger<const K: u64> = scale_std::integer::SecretInteger<K, $kappa>;
+        type SecretFixed<const K: u64, const F: u64> =
+            scale_std::fixed_point::SecretFixed<K, F, $kappa>;
+        type SecretFloat<const V: u64, const P: u64> = 
+            scale_std::floating_point::SecretFloat<V,P,$kappa>;
         mod helper {
             #[no_mangle]
             fn main() {
                 extern "Rust" {
-                    fn set_i64_max_memory(n: u32);
-                    fn set_secret_i64_max_memory(n: u32);
-                    fn set_clear_modp_max_memory(n: u32);
-                    fn set_secret_modp_max_memory(n: u32);
+                    fn init_wasm_heap_memory();
                 }
-                use $crate::alloc::{Allocate, GetAllocator};
-                // This order is important, the first instruction before any memory access ever must be `set_i64_max_memory`
                 unsafe {
-                    set_i64_max_memory($a);
-                    set_secret_i64_max_memory($b);
-                    set_secret_modp_max_memory($c);
-                    set_clear_modp_max_memory($d);
-                }
-                if $a > 0 {
-                    unsafe {
-                        $crate::I64_MEMORY = $a;
-                        i64::get_allocator().free($a);
-                    }
-                }
-                if $b > 0 {
-                    unsafe {
-                        $crate::SECRET_I64_MEMORY = $b;
-                        $crate::SecretI64::get_allocator().free($b);
-                    }
-                }
-                if $c > 0 {
-                    unsafe {
-                        $crate::SECRET_MODP_MEMORY = $c;
-                        $crate::SecretModp::get_allocator().free($c);
-                    }
-                }
-                if $d > 0 {
-                    unsafe {
-                        $crate::CLEAR_MODP_MEMORY = $d;
-                        $crate::ClearModp::get_allocator().free($d);
-                    }
-                }
-                if $e > 0 {
-                    unsafe {
-                        $crate::KAPPA = $d;
-                    }
+                    init_wasm_heap_memory();
                 }
                 super::main();
                 #[cfg(feature = "emulate")]
@@ -427,26 +395,6 @@ macro_rules! main {
             }
         }
     };
-}
-
-pub trait Print {
-    fn print(self);
-}
-
-impl Print for &'static str {
-    #[inline(always)]
-    fn print(self) {
-        for &c in self.as_bytes() {
-            unsafe { __print_char_regint(c.into()) }
-        }
-    }
-}
-
-#[macro_export]
-macro_rules! print {
-    ($($e:expr),*) => {
-        $($crate::Print::print($e);)*
-    }
 }
 
 #[macro_export]
@@ -466,22 +414,23 @@ macro_rules! assert {
     };
 }
 
-pub trait SecretCmp<Other> {
-    fn lt(self, other: Other) -> SecretBit;
-    fn le(self, other: Other) -> SecretBit;
-    fn gt(self, other: Other) -> SecretBit;
-    fn ge(self, other: Other) -> SecretBit;
-    fn eq(self, other: Other) -> SecretBit;
-    fn ne(self, other: Other) -> SecretBit;
+/* Comparison outputting a A */
+pub trait ScaleCmp<Other, A> {
+    fn lt(self, other: Other) -> A;
+    fn le(self, other: Other) -> A;
+    fn gt(self, other: Other) -> A;
+    fn ge(self, other: Other) -> A;
+    fn eq(self, other: Other) -> A;
+    fn ne(self, other: Other) -> A;
 }
 
-pub trait SecretCmpZ {
-    fn ltz(self) -> SecretBit;
-    fn lez(self) -> SecretBit;
-    fn gtz(self) -> SecretBit;
-    fn gez(self) -> SecretBit;
-    fn eqz(self) -> SecretBit;
-    fn nez(self) -> SecretBit;
+pub trait ScaleCmpZ<A> {
+    fn ltz(self) -> A;
+    fn lez(self) -> A;
+    fn gtz(self) -> A;
+    fn gez(self) -> A;
+    fn eqz(self) -> A;
+    fn nez(self) -> A;
 }
 
 pub trait Rand {
@@ -511,6 +460,12 @@ pub struct Player<const ID: u32>;
 
 #[derive(Copy, Clone)]
 pub struct ConstU32<const U: u32>;
+
+#[derive(Copy, Clone)]
+pub struct ConstU64<const U: u64>;
+
+#[derive(Copy, Clone)]
+pub struct ConstBool<const U: bool>;
 
 #[derive(Copy, Clone)]
 pub struct ConstI32<const I: i32>;
@@ -590,6 +545,24 @@ impl<const I: i32> AssemblyType for ConstI32<I> {
 
 impl<const I: u32> AssemblyType for ConstU32<I> {
     type Type = u32;
+
+    #[inline(always)]
+    fn to_asm(self) -> Self::Type {
+        I
+    }
+}
+
+impl<const I: u64> AssemblyType for ConstU64<I> {
+    type Type = u64;
+
+    #[inline(always)]
+    fn to_asm(self) -> Self::Type {
+        I
+    }
+}
+
+impl<const I: bool> AssemblyType for ConstBool<I> {
+    type Type = bool;
 
     #[inline(always)]
     fn to_asm(self) -> Self::Type {

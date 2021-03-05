@@ -1,6 +1,10 @@
+
+// Copyright (c) 2021, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+// Copyright (c) 2021, Cosmian Tech SAS, 53-55 rue La Boétie, Paris, France.
+
 use crate::array::Array;
 use scale::alloc::GetAllocator;
-use scale::{LoadFromMem, Reveal, Stack, StackAddress, StoreInMem, alloc::Allocate};
+use scale::{alloc::Allocate, LoadFromMem, Reveal, Stack, StackAddress, StoreInMem};
 
 /// An matrix datastructure that allocates memory and never frees it
 pub struct Matrix<T, const N: u64, const M: u64> {
@@ -60,13 +64,13 @@ impl<T: LoadFromMem<i64> + GetAllocator + StoreInMem<i64>, const N: u64, const M
 impl<T: StoreInMem<i64>, const N: u64, const M: u64> Matrix<T, N, M> {
     #[inline(always)]
     pub fn set(&mut self, i: u64, j: u64, val: &T) {
-        val.store_in_mem((self.base_address + i * M + j) as _)
+        unsafe { val.store_in_mem((self.base_address + i * M + j) as _) }
     }
 
     /* This version just indexes according to the 'standard' ordering */
     #[inline(always)]
     pub fn set_mem(&mut self, i: u64, val: &T) {
-        val.store_in_mem((self.base_address + i) as _)
+        unsafe { val.store_in_mem((self.base_address + i) as _) }
     }
 }
 

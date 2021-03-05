@@ -7,14 +7,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
-name = "cats_demo_2_2"
-version = "0.1.0"
-dependencies = [
- "scale-core",
- "scale_std",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -41,6 +33,14 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "mpc_kpi"
+version = "0.1.0"
+dependencies = [
+ "scale-core",
+ "scale_std",
+]
 
 [[package]]
 name = "num-bigint"
@@ -104,9 +104,9 @@ dependencies = [
 
 [[package]]
 name = "scale-core"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "962ded685ad2ac14768cedc13bbffde2a6f20f1dd92a6ae73189cfc4b197bcdd"
+checksum = "4d1cca888313f9d0310ef45e806e002b5771a5f778afa1ba8e4ebd07e3c71890"
 dependencies = [
  "lazy_static",
  "num-bigint",
@@ -117,9 +117,9 @@ dependencies = [
 
 [[package]]
 name = "scale_documentation"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6bf2f2a9092472d627486a211a3f7065ff3f3fe96befee64041e49b3788e5b07"
+checksum = "3ded3837c4c4aff612f4ae01cce8b357574ab73543045653696c3a1d17634835"
 dependencies = [
  "eyre",
  "lazy_static",
@@ -128,9 +128,9 @@ dependencies = [
 
 [[package]]
 name = "scale_documentation_parser"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "971d6dad64ccd69fcb5b178e873e0d75aa02488941ac1dac51bb7a0801dde339"
+checksum = "9b49427846442ddc7875364a46996c15ed82e3f929a4b8628dee1b529329b1d9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -139,9 +139,9 @@ dependencies = [
 
 [[package]]
 name = "scale_impl_generator"
-version = "0.0.1"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "343aae6d395fab7936a6f012b7b159926de2c87e44bc8e3194121f6509051e26"
+checksum = "c93cc602fd4f6b68ae86c3d8396f358e625cdadbc4da3bc5249c9c2a7645ed99"
 dependencies = [
  "num-bigint",
  "num-integer",
@@ -149,14 +149,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "scale_documentation",
+ "syn",
  "tracing",
 ]
 
 [[package]]
 name = "scale_std"
-version = "0.0.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d543894445af8a294eebaa59fd8f88fb4866df877a568c575ace0270752b0eae"
+checksum = "40282f20adf68e85cbe82b06d50b4e7b3bd89000e814e73ebf8b87480ea7235c"
 dependencies = [
  "scale-core",
 ]

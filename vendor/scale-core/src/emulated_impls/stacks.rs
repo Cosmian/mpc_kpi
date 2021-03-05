@@ -1,3 +1,7 @@
+
+// Copyright (c) 2021, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+// Copyright (c) 2021, Cosmian Tech SAS, 53-55 rue La Boétie, Paris, France.
+
 use crate::{ClearModp, RawSecretBit, SecretI64, SecretModp};
 use std::sync::Mutex;
 
@@ -161,12 +165,11 @@ extern "C" fn __getspsbit() -> i64 {
     (vec.len() - 1) as i64
 }
 
-
 #[no_mangle]
 extern "C" fn __rpeekint(address: i64) -> i64 {
     let address = address as usize;
     let vec = STACK_I64.lock().unwrap();
-    vec[vec.len()- 1 - address]
+    vec[vec.len() - 1 - address]
 }
 
 #[no_mangle]
@@ -176,7 +179,6 @@ extern "C" fn __rpokeint(address: i64, value: i64) {
     let vv = vec.len();
     vec[vv - 1 - address] = value;
 }
-
 
 #[no_mangle]
 extern "C" fn __rpeekc(address: i64) -> ClearModp {
@@ -193,7 +195,6 @@ extern "C" fn __rpokec(address: i64, value: ClearModp) {
     vec[vv - 1 - address] = value;
 }
 
-
 #[no_mangle]
 extern "C" fn __rpeeks(address: i64) -> SecretModp {
     let address = address as usize;
@@ -208,7 +209,6 @@ extern "C" fn __rpokes(address: i64, value: SecretModp) {
     let vv = vec.len();
     vec[vv - 1 - address] = value;
 }
-
 
 #[no_mangle]
 extern "C" fn __rpeeksint(address: i64) -> SecretI64 {
@@ -239,7 +239,6 @@ extern "C" fn __rpokesbit(address: i64, value: RawSecretBit) {
     let vv = vec.len();
     vec[vv - 1 - address] = value;
 }
-
 
 lazy_static::lazy_static! {
     static ref STACK_I64: Mutex<Vec<i64>> = Default::default();
