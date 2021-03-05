@@ -4,7 +4,7 @@
 
 use scale::Reveal;
 use scale::ScaleCmp;
-use scale::{print, Channel, ConstI32, ConstU32, SecretI64};
+use scale::{Channel, ConstI32, ConstU32, SecretI64};
 use scale::{Player, SecretModp};
 use scale_std::slice::Slice;
 
@@ -23,16 +23,10 @@ use scale_std::slice::Slice;
 // The output table for every player looks like
 // Month, Sum criteria 1, Rank Criteria 1,...,Sum criteria 5, Rank Criteria 5
 
-scale::main! {
-    I64_MEMORY = 1000;
-    SECRET_I64_MEMORY = 1000;
-    SECRET_MODP_MEMORY = 1000;
-    CLEAR_MODP_MEMORY = 1000;
-    KAPPA = 40;
-}
 const CRITERIA: u64 = 5;
 
 #[inline(never)]
+#[scale::main(KAPPA = 40)]
 fn main() {
     let end: SecretModp = SecretModp::from(ConstI32::<0>);
     print!("Program starting\n");
@@ -46,7 +40,7 @@ fn main() {
             }
             Some(s) => s,
         };
-        let month = row_0
+        let month = *row_0
             .get(0)
             .expect("there should be a month on the first col of player 0");
         print!("...finding row player 1...\n");
@@ -73,13 +67,13 @@ fn main() {
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
             // reveal the sum to all players
-            let sum: SecretModp = row_0
+            let sum: SecretModp = *row_0
                 .get(i)
                 .expect("there should be a criteria value on player 0")
-                + row_1
+                + *row_1
                     .get(i)
                     .expect("there should be a criteria value on player 1")
-                + row_2
+                + *row_2
                     .get(i)
                     .expect("there should be a criteria value on player 2");
             print!("...revealing sum criteria...", i as i64, "\n");
@@ -91,7 +85,7 @@ fn main() {
             values.set(
                 0,
                 &SecretI64::from(
-                    row_0
+                    *row_0
                         .get(i)
                         .expect("there should be a criteria value on player 0"),
                 ),
@@ -99,7 +93,7 @@ fn main() {
             values.set(
                 1,
                 &SecretI64::from(
-                    row_1
+                    *row_1
                         .get(i)
                         .expect("there should be a criteria value on player 0"),
                 ),
@@ -107,7 +101,7 @@ fn main() {
             values.set(
                 2,
                 &SecretI64::from(
-                    row_2
+                    *row_2
                         .get(i)
                         .expect("there should be a criteria value on player 0"),
                 ),
@@ -115,9 +109,9 @@ fn main() {
             let indexes = rescale(&sort(&values));
             // reveal the rankings selectively
             print!("...revealing rankings criteria...", i as i64, "\n");
-            SecretModp::from(indexes.get_unchecked(0)).private_output(Player::<0>, Channel::<0>);
-            SecretModp::from(indexes.get_unchecked(1)).private_output(Player::<1>, Channel::<0>);
-            SecretModp::from(indexes.get_unchecked(2)).private_output(Player::<2>, Channel::<0>);
+            SecretModp::from(*indexes.get_unchecked(0)).private_output(Player::<0>, Channel::<0>);
+            SecretModp::from(*indexes.get_unchecked(1)).private_output(Player::<1>, Channel::<0>);
+            SecretModp::from(*indexes.get_unchecked(2)).private_output(Player::<2>, Channel::<0>);
             print!("...done criteria...", i as i64, "\n");
         }
         // signal end to all players
@@ -141,10 +135,10 @@ fn find_record<const P: u32>(
                 return None;
             }
             Some(s) => {
-                let this_date: SecretI64 = s
+                let this_date: SecretI64 = (*s
                     .get(0)
-                    .expect("there should be a month on the first column")
-                    .into();
+                    .expect("there should be a month on the first column"))
+                .into();
                 if this_date.eq(*date).reveal() {
                     // found
                     return Some(s);
@@ -188,19 +182,19 @@ fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
     let mut indexes: Slice<SecretI64> = Slice::uninitialized(n);
     for left in 0..n - 1 {
         for right in left + 1..n {
-            let left_value = &values.get_unchecked(left);
-            let right_value = &values.get_unchecked(right);
+            let left_value = &*values.get_unchecked(left);
+            let right_value = &*values.get_unchecked(right);
             let cmp = cmp(left_value, right_value);
             indexes.set(
                 left,
-                &(indexes
+                &(*indexes
                     .get(left)
                     .expect("sort: there should be a left value")
                     + cmp),
             );
             indexes.set(
                 right,
-                &(indexes
+                &(*indexes
                     .get(right)
                     .expect("sort there should be a right  value")
                     - cmp),
@@ -222,7 +216,7 @@ fn rescale(indexes: &Slice<SecretI64>) -> Slice<SecretI64> {
     let n_1 = SecretI64::from(n as i64 - 1);
     let mut rescaled: Slice<SecretI64> = Slice::uninitialized(n);
     for i in 0..n {
-        let v = &indexes
+        let v = &*indexes
             .get(i)
             .expect("there should be an index at that position");
         rescaled.set(i, &(((*v + n_1) >> ConstU32::<1>) + 1));
