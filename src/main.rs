@@ -1,6 +1,5 @@
 #![no_std]
 #![no_main]
-#![feature(min_const_generics)]
 
 use scale::Reveal;
 use scale::ScaleCmp;
@@ -216,10 +215,10 @@ fn rescale(indexes: &Slice<SecretI64>) -> Slice<SecretI64> {
     let n_1 = SecretI64::from(n as i64 - 1);
     let mut rescaled: Slice<SecretI64> = Slice::uninitialized(n);
     for i in 0..n {
-        let v = &*indexes
+        let v = *indexes
             .get(i)
             .expect("there should be an index at that position");
-        rescaled.set(i, &(((*v + n_1) >> ConstU32::<1>) + 1));
+        rescaled.set(i, &(((v + n_1) >> ConstU32::<1>) + 1));
     }
     rescaled
 }
