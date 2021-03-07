@@ -4,12 +4,7 @@
 
 use scale_std::slice::Slice;
 
-// Ranking of 3 players along these criteria
-//  - crédit habitat
-//  - crédit conso
-//  - épargne LT
-//  - épargne CT
-//  - solde comptes courants
+// Ranking of 3 players along 5 criteria
 //
 // this programs calculates for all criteria:
 // - the sum and reveals it to all players
