@@ -77,7 +77,7 @@ fn main() {
             values.set(0, &SecretI64::from(row_0.get(i)));
             values.set(1, &SecretI64::from(row_1.get(i)));
             values.set(2, &SecretI64::from(row_2.get(i)));
-            let indexes = rescale(&sort(&values));
+            let indexes = rescale(&sort_desc(&values));
             // reveal the rankings selectively
             print!("...revealing rankings criteria...", i as i64, "\n");
             SecretModp::from(indexes.get(0)).private_output(Player::<0>, Channel::<0>);
@@ -145,7 +145,7 @@ fn read_next_record<const P: u32>(
 }
 
 #[inline(always)]
-fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
+fn sort_desc(values: &Slice<SecretI64>) -> Slice<SecretI64> {
     let n = values.len();
     let mut indexes: Slice<SecretI64> = Slice::uninitialized(n);
     for left in 0..n - 1 {
@@ -153,8 +153,8 @@ fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
             let left_value = &values.get(left);
             let right_value = &values.get(right);
             let cmp = cmp(left_value, right_value);
-            indexes.set(left, &(indexes.get(left) + cmp));
-            indexes.set(right, &(indexes.get(right) - cmp));
+            indexes.set(left, &(indexes.get(left) - cmp));
+            indexes.set(right, &(indexes.get(right) + cmp));
         }
     }
     indexes
