@@ -66,17 +66,24 @@ fn main() {
         month.private_output(Player::<2>, Channel::<0>);
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
+            let value_0 = row_0.get(i);
+            let value_1 = row_1.get(i);
+            let value_2 = row_2.get(i);
+            // "reveal" to each player its own value
+            value_0.private_output(Player::<0>, Channel::<0>);
+            value_1.private_output(Player::<1>, Channel::<0>);
+            value_2.private_output(Player::<2>, Channel::<0>);
             // reveal the sum to all players
-            let sum: SecretModp = row_0.get(i) + row_1.get(i) + row_2.get(i);
+            let sum: SecretModp = value_0 + value_1 + value_2;
             print!("...revealing sum criteria...", i as i64, "\n");
             sum.private_output(Player::<0>, Channel::<0>);
             sum.private_output(Player::<1>, Channel::<0>);
             sum.private_output(Player::<2>, Channel::<0>);
             // determine rankings
             let mut values: Slice<SecretI64> = Slice::uninitialized(3);
-            values.set(0, &SecretI64::from(row_0.get(i)));
-            values.set(1, &SecretI64::from(row_1.get(i)));
-            values.set(2, &SecretI64::from(row_2.get(i)));
+            values.set(0, &SecretI64::from(value_0));
+            values.set(1, &SecretI64::from(value_1));
+            values.set(2, &SecretI64::from(value_2));
             let indexes = rescale(&sort_desc(&values));
             // reveal the rankings selectively
             print!("...revealing rankings criteria...", i as i64, "\n");
