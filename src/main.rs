@@ -20,7 +20,7 @@ use scale_std::slice::Slice;
 // The lines must be sorted by month in ascending order
 //
 // The output table for every player looks like
-// Month, Sum criteria 1, Rank Criteria 1,...,Sum criteria 5, Rank Criteria 5
+// Month, Value Criteria1, Sum criteria 1, Rank Criteria 1,...,Value Criteria5, Sum criteria 5, Rank Criteria 5
 
 const CRITERIA: u64 = 5;
 
@@ -65,52 +65,52 @@ fn main() {
         month.private_output(Player::<2>, Channel::<0>);
         // Process the 5 criteria
         for i in 1..(CRITERIA as u64) + 1 {
-            // reveal the sum to all players
-            let sum: SecretModp = *row_0
+            print!("...processing criteria...", i as i64, "\n");
+            let secret_value_0 = row_0
                 .get(i)
-                .expect("there should be a criteria value on player 0")
-                + *row_1
-                    .get(i)
-                    .expect("there should be a criteria value on player 1")
-                + *row_2
-                    .get(i)
-                    .expect("there should be a criteria value on player 2");
+                .expect("Player 0: there should be a value for criteria");
+            let secret_value_1 = row_1
+                .get(i)
+                .expect("Player 1: there should be a value for criteria");
+            let secret_value_2 = row_2
+                .get(i)
+                .expect("Player 2: there should be a value for criteria");
+            // "reveal" to each player its own value
+            secret_value_0.private_output(Player::<0>, Channel::<0>);
+            secret_value_1.private_output(Player::<1>, Channel::<0>);
+            secret_value_2.private_output(Player::<2>, Channel::<0>);
+            // reveal the sum to all players
+            let sum: SecretModp = *secret_value_0 + *secret_value_1 + *secret_value_2;
             print!("...revealing sum criteria...", i as i64, "\n");
             sum.private_output(Player::<0>, Channel::<0>);
             sum.private_output(Player::<1>, Channel::<0>);
             sum.private_output(Player::<2>, Channel::<0>);
             // determine rankings
-            let mut values: Slice<SecretI64> = Slice::uninitialized(3);
-            values.set(
-                0,
-                &SecretI64::from(
-                    *row_0
-                        .get(i)
-                        .expect("there should be a criteria value on player 0"),
-                ),
-            );
-            values.set(
-                1,
-                &SecretI64::from(
-                    *row_1
-                        .get(i)
-                        .expect("there should be a criteria value on player 0"),
-                ),
-            );
-            values.set(
-                2,
-                &SecretI64::from(
-                    *row_2
-                        .get(i)
-                        .expect("there should be a criteria value on player 0"),
-                ),
-            );
-            let indexes = rescale(&sort(&values));
+            let mut secret_values: Slice<SecretI64> = Slice::uninitialized(3);
+            secret_values.set(0, &SecretI64::from(*secret_value_0));
+            secret_values.set(1, &SecretI64::from(*secret_value_1));
+            secret_values.set(2, &SecretI64::from(*secret_value_2));
+            let indexes = rescale(&secretly_rank_desc(&secret_values));
             // reveal the rankings selectively
             print!("...revealing rankings criteria...", i as i64, "\n");
-            SecretModp::from(*indexes.get_unchecked(0)).private_output(Player::<0>, Channel::<0>);
-            SecretModp::from(*indexes.get_unchecked(1)).private_output(Player::<1>, Channel::<0>);
-            SecretModp::from(*indexes.get_unchecked(2)).private_output(Player::<2>, Channel::<0>);
+            SecretModp::from(
+                *indexes
+                    .get(0)
+                    .expect("Player 0: there should be rank for criteria"),
+            )
+            .private_output(Player::<0>, Channel::<0>);
+            SecretModp::from(
+                *indexes
+                    .get(1)
+                    .expect("Player 1: there should be rank for criteria"),
+            )
+            .private_output(Player::<1>, Channel::<0>);
+            SecretModp::from(
+                *indexes
+                    .get(2)
+                    .expect("Player 2: there should be rank for criteria"),
+            )
+            .private_output(Player::<2>, Channel::<0>);
             print!("...done criteria...", i as i64, "\n");
         }
         // signal end to all players
@@ -176,7 +176,7 @@ fn read_next_record<const P: u32>(
 }
 
 #[inline(always)]
-fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
+fn secretly_rank_desc(values: &Slice<SecretI64>) -> Slice<SecretI64> {
     let n = values.len();
     let mut indexes: Slice<SecretI64> = Slice::uninitialized(n);
     for left in 0..n - 1 {
@@ -189,14 +189,14 @@ fn sort(values: &Slice<SecretI64>) -> Slice<SecretI64> {
                 &(*indexes
                     .get(left)
                     .expect("sort: there should be a left value")
-                    + cmp),
+                    - cmp),
             );
             indexes.set(
                 right,
                 &(*indexes
                     .get(right)
                     .expect("sort there should be a right  value")
-                    - cmp),
+                    + cmp),
             );
         }
     }
