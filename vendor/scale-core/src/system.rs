@@ -1,22 +1,26 @@
+
+// Copyright (c) 2021, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+// Copyright (c) 2021, Cosmian Tech SAS, 53-55 rue La Boétie, Paris, France.
+
 use super::*;
 
 /* This file contains all the simple "system style" commands */
 
 // Re-initializes the specified timer
 #[inline(always)]
-pub fn start_clock<const ID: i32>(_: ConstI32::<ID>) {
+pub fn start_clock<const ID: i32>(_: ConstI32<ID>) {
     unsafe { __start_clock(ID) }
 }
 
 // Stops the clock and prints the time
 #[inline(always)]
-pub fn stop_clock<const ID: i32>(_: ConstI32::<ID>) {
+pub fn stop_clock<const ID: i32>(_: ConstI32<ID>) {
     unsafe { __stop_clock(ID) }
 }
 
 // Requests a given minimum bit length of the prime
 #[inline(always)]
-pub fn require_bit_length<const BIT_LENGTH: u32>(_: ConstU32::<BIT_LENGTH>) {
+pub fn require_bit_length<const BIT_LENGTH: u32>(_: ConstU32<BIT_LENGTH>) {
     unsafe { __reqbl(BIT_LENGTH) }
 }
 
@@ -46,13 +50,13 @@ pub fn clear_registers() {
 
 // GC call
 #[inline(always)]
-pub unsafe fn execute_garbled_circuit<const ID: u32>(_: ConstU32::<ID>) {
+pub unsafe fn execute_garbled_circuit<const ID: u32>(_: ConstU32<ID>) {
     __gc(ID)
 }
 
 // LF call
 #[inline(always)]
-pub unsafe fn execute_local_function<const ID: u32>(_: ConstU32::<ID>) {
+pub unsafe fn execute_local_function<const ID: u32>(_: ConstU32<ID>) {
     __lf(ID)
 }
 

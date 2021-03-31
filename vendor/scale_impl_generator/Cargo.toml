@@ -13,8 +13,8 @@
 [package]
 edition = "2018"
 name = "scale_impl_generator"
-version = "0.0.1"
-authors = ["Oliver Scherer <oliver.scherer@cosmian.com>"]
+version = "0.1.1"
+authors = ["Oliver Scherer <oliver.scherer@cosmian.com>", "Benjamin Coenen <benjamin.coenen@cosmian.com>"]
 description = "a proc macro to generate a large percentage of all impls on SCALE crypto primitives"
 license = "MIT AND Apache-2.0"
 repository = "https://github.com/KULeuven-COSIC/SCALE-MAMBA"
@@ -22,7 +22,7 @@ repository = "https://github.com/KULeuven-COSIC/SCALE-MAMBA"
 [lib]
 proc-macro = true
 [dependencies.documentation]
-version = "0.0.1"
+version = "0.1.0"
 package = "scale_documentation"
 
 [dependencies.num-bigint]
@@ -39,6 +39,10 @@ version = "1.0"
 
 [dependencies.quote]
 version = "1.0"
+
+[dependencies.syn]
+version = "1.0.48"
+features = ["full", "extra-traits"]
 
 [dependencies.tracing]
 version = "0.1"

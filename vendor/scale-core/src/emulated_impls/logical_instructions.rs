@@ -1,3 +1,7 @@
+
+// Copyright (c) 2021, COSIC-KU Leuven, Kasteelpark Arenberg 10, bus 2452, B-3001 Leuven-Heverlee, Belgium.
+// Copyright (c) 2021, Cosmian Tech SAS, 53-55 rue La Boétie, Paris, France.
+
 use num_bigint::BigInt;
 use std::convert::TryFrom;
 
@@ -27,7 +31,10 @@ extern "C" fn __xorsintc(left: crate::SecretI64, right: i64) -> crate::SecretI64
 }
 
 #[no_mangle]
-extern "C" fn __andsb(left: crate::RawSecretBit, right: crate::RawSecretBit) -> crate::RawSecretBit {
+extern "C" fn __andsb(
+    left: crate::RawSecretBit,
+    right: crate::RawSecretBit,
+) -> crate::RawSecretBit {
     crate::RawSecretBit(left.0 & right.0)
 }
 #[no_mangle]
@@ -35,7 +42,10 @@ extern "C" fn __orsb(left: crate::RawSecretBit, right: crate::RawSecretBit) -> c
     crate::RawSecretBit(left.0 | right.0)
 }
 #[no_mangle]
-extern "C" fn __xorsb(left: crate::RawSecretBit, right: crate::RawSecretBit) -> crate::RawSecretBit {
+extern "C" fn __xorsb(
+    left: crate::RawSecretBit,
+    right: crate::RawSecretBit,
+) -> crate::RawSecretBit {
     crate::RawSecretBit(left.0 ^ right.0)
 }
 
