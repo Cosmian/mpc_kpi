@@ -97,7 +97,7 @@ fn main() {
             secret_values.set(0, &SecretI64::from(secret_value_0));
             secret_values.set(1, &SecretI64::from(secret_value_1));
             secret_values.set(2, &SecretI64::from(secret_value_2));
-            let indexes = rescale(&secretly_rank(&secret_values, true));
+            let indexes = secretly_rank(&secret_values, true);
             // reveal the rankings selectively
             println!("...revealing rankings criteria...", i as i64, "");
             output_0.append(SecretModp::from(*indexes.get_unchecked(0)));
@@ -119,11 +119,10 @@ fn read_tabular<const P: u32>(player: Player<P>, num_cols: u64) -> Option<Slice<
     println!("Num Cols: ", num_cols);
     let mut result = Slice::uninitialized(num_cols);
     for i in 0..num_cols {
-        println!("Reading col: ", i);
+        // println!("Reading col: ", i);
         let next_column = match row.next_col() {
             Some(c) => c,
             None => {
-                println!("NONE Col ", i);
                 //there is no more data to be read
                 if i == 0 {
                     // this is the en of the dataset
@@ -147,7 +146,7 @@ fn read_tabular<const P: u32>(player: Player<P>, num_cols: u64) -> Option<Slice<
                 return None;
             }
         };
-        println!("Done Col: ", i);
+        // println!("Done Col: ", i);
         // we expect a single scalar value in the column
         let value = next_column
             .into_secret_modp()
