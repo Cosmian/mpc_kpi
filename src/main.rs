@@ -28,7 +28,7 @@ const PARTICIPANT_0: Player<0> = Player::<0>;
 const PARTICIPANT_1: Player<1> = Player::<1>;
 const PARTICIPANT_2: Player<2> = Player::<2>;
 
-const CRITERIA: u64 = 5;
+const CRITERIA: u64 = 3;
 
 #[cosmian_std::main(KAPPA = 40)]
 #[inline(never)]
@@ -97,12 +97,12 @@ fn main() {
             secret_values.set(0, &SecretI64::from(secret_value_0));
             secret_values.set(1, &SecretI64::from(secret_value_1));
             secret_values.set(2, &SecretI64::from(secret_value_2));
-            let indexes = secretly_rank(&secret_values, true);
+            let ranks = secretly_rank(&secret_values, true);
             // reveal the rankings selectively
             println!("...revealing rankings criteria...", i as i64, "");
-            output_0.append(SecretModp::from(*indexes.get_unchecked(0)));
-            output_1.append(SecretModp::from(*indexes.get_unchecked(1)));
-            output_2.append(SecretModp::from(*indexes.get_unchecked(2)));
+            output_0.append(SecretModp::from(*ranks.get_unchecked(0)));
+            output_1.append(SecretModp::from(*ranks.get_unchecked(1)));
+            output_2.append(SecretModp::from(*ranks.get_unchecked(2)));
             println!("...done criteria...", i as i64, "");
         }
         // signal end to all participants
