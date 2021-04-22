@@ -1,5 +1,6 @@
 {
-    "cSpell.words": [
-        "Modp"
-    ]
+    "rust-analyzer.cargo.allFeatures": true,
+    "rust-analyzer.runnableEnv": {
+        "SHARING_DATA": "./SharingData.txt",
+    }
 }
