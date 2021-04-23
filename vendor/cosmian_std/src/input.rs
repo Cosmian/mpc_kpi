@@ -140,15 +140,16 @@ impl<const P: u32> InputRow<P> {
     /// Get next column in this row
     #[cfg(feature = "emulate")]
     pub fn next_col(&mut self) -> Option<Column> {
-        let players_data = PLAYERS_DATA.lock().unwrap();
-
         self.cursor += 1;
         if self.cursor > self.nb_col as i64 {
             self.delete_consumed_line();
 
             return None;
         }
-        let current_row = players_data.get(&P)?.first()?;
+        let current_row = {
+            let players_data = PLAYERS_DATA.lock().unwrap();
+            players_data.get(&P)?.first()?.clone()
+        };
 
         let current_col = current_row.get(self.cursor as usize)?;
 
