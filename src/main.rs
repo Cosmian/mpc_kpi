@@ -28,7 +28,7 @@ const PARTICIPANT_0: Player<0> = Player::<0>;
 const PARTICIPANT_1: Player<1> = Player::<1>;
 const PARTICIPANT_2: Player<2> = Player::<2>;
 
-const CRITERIA: u64 = 3;
+const CRITERIA: u64 = 5;
 
 #[cosmian_std::main(KAPPA = 40)]
 #[inline(never)]
@@ -199,6 +199,9 @@ fn find_tabular<const P: u32>(
 fn secretly_rank(values: &Slice<SecretI64>, descending: bool) -> Slice<SecretI64> {
     let n = values.len();
     let mut ranks: Slice<SecretI64> = Slice::uninitialized(n);
+    for i in 0..n {
+        ranks.set(i, &SecretI64::from(0));
+    }
     for left in 0..n - 1 {
         for right in left + 1..n {
             let left_value = &*values.get_unchecked(left);
