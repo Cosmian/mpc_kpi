@@ -85,7 +85,7 @@ impl<const P: u32> InputRow<P> {
                 .unwrap_or_else(|_| panic!("cannot read emulate input data for player {}", P));
             let data: Vec<Vec<serde_json::Value>> = serde_json::from_slice(&res)
                 .expect("data input json must be of type Vec<Vec<i64>>");
-            let nb_col = data.len();
+            let nb_col = data.get(0).map(|col| col.len()).unwrap_or_default();
 
             players_data.insert(P, data);
 

@@ -16,9 +16,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "cosmian_std"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5016da1075e0fc693b9a3ae11621a83316f539060cd47352858eb06ca8292028"
+checksum = "2a7ed158180d96331776c4d914c763792433b339e6591a98b9111bc2619329cd"
 dependencies = [
  "once_cell",
  "scale-core",
