@@ -1,3 +1,34 @@
+# 0.1.15 (March 12, 2021)
+
+### Fixed
+
+- `#[instrument]` on functions returning `Box::pin`ned futures incorrectly
+  skipping function bodies prior to returning a future ([#1297])
+
+Thanks to @nightmared for contributing to this release!
+
+[#1297]: https://github.com/tokio-rs/tracing/pull/1297
+
+# 0.1.14 (March 10, 2021)
+
+### Fixed
+
+- Compatibility between `#[instrument]` and `async-trait` v0.1.43 and newer
+  ([#1228])
+
+Thanks to @nightmared for lots of hard work on this fix!
+
+[#1228]: https://github.com/tokio-rs/tracing/pull/1228
+
+# 0.1.13 (February 17, 2021)
+
+### Fixed
+
+- Compiler error when using `#[instrument(err)]` on functions which return `impl
+  Trait` ([#1236])
+
+[#1236]: https://github.com/tokio-rs/tracing/pull/1236
+
 # 0.1.12 (February 4, 2021)
 
 ### Fixed
