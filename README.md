@@ -15,6 +15,10 @@ Typically, each entity all provide a dataset with 5 columns:
  - the sum of the values of all participants for that criteria
  - the rank (1, 2 or 3 descending) of the participant for that criteria
 
+Results of this computation can be nicely post-processed and rendered in Dataiku thanks to the [Cosmian Dataiku Plugin](https://github.com/Cosmian/cosmian-dataiku-plugin)
+
+![dataiku KPIs](./dataiku_kpis.png)
+
 
 ## Hack it !
 
