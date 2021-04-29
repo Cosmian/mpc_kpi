@@ -8,7 +8,7 @@ Typically, each entity all provide a dataset with 5 columns:
  - quarterly sales
  - quarterly net result
  - quarterly EBITDA
- - quarterly cash_flow
+ - quarterly cash flow
  - end of quarter cash position
 
  The computation will reveal to each participant, for each quarter and each criteria:
