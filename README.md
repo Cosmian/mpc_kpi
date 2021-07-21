@@ -2,7 +2,7 @@
 
 This algorithm demonstrates how 5 business entities can rank each other over a period against 5 financial criteria without disclosing the actual values of this criteria to each other.
 
-Typically, each entity all provide a dataset with 5 columns:
+Typically, each entity all provide a dataset with 6 columns:
 
  - quarter (in YYYYQQ format)
  - quarterly sales
